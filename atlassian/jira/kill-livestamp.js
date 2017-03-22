@@ -5,6 +5,7 @@
 // @description   This changes the friendly timestamp display values in Atlassian from values like: Now, Today, Yesterday, n Hours Ago, etc Then changes the <time> tags to <span> tags (since <time> tags get updated every couple seconds)
 // @author        Justin Hyland (j@linux.com)
 // @include       /^https?://.*\.atlassian\.net/
+// @match         /^https?://.*\.atlassian\.net/
 // @homepage      https://github.com/jhyland87/tampermonkey
 // @grant         none
 // @run-at        document-end
@@ -13,6 +14,8 @@
 // ==/UserScript==
 (function() {
   'use strict';
+
+  console.debug( '[tampermonkey] Included atlassian/jira/kill-livestamp.js' );
 
   var $time = $( 'time' );
 

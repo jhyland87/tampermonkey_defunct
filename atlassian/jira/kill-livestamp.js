@@ -15,8 +15,6 @@
 (function() {
   'use strict';
 
-  console.debug( '[tampermonkey] Included atlassian/jira/kill-livestamp.js' );
-
   var $time = $( 'time' );
 
   if ( $time.length ) {

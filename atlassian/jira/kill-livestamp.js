@@ -12,23 +12,31 @@
 // @downloadURL   https://raw.githubusercontent.com/jhyland87/tampermonkey/master/atlassian/jira/kill-livestamp.js
 // @updateURL     https://raw.githubusercontent.com/jhyland87/tampermonkey/master/atlassian/jira/kill-livestamp.js
 // ==/UserScript==
+
+
+
 (function() {
   'use strict';
 
-  var $time = $( 'time' );
-
-  if ( $time.length ) {
-    console.debug( 'Found %s <time> elements in DOM', $time.length );
-
-    $time.each(function( idx, elm ){
-      $( elm )
-        .text( new Date( $( elm ).attr( 'datetime' ) ).toGMTString() )
-        .replaceWith(function() { 
-          return '<span>' + this.innerHTML + '</span>';
-        });
-    });
+  if ( ! $ || typeof $ !== 'function' ){
+    console.error( 'Unable to fully load the Tampermonkey script kill-livestamp.js - jQuery is required, but not found' );
   }
   else {
-    console.debug( 'No <time> elements found in DOM' );
+    var $time = $( 'time' );
+
+    if ( $time.length ) {
+      console.debug( 'Found %s <time> elements in DOM', $time.length );
+
+      $time.each(function( idx, elm ){
+        $( elm )
+          .text( new Date( $( elm ).attr( 'datetime' ) ).toGMTString() )
+          .replaceWith(function() {
+            return '<span>' + this.innerHTML + '</span>';
+          });
+      });
+    }
+    else {
+      console.debug( 'No <time> elements found in DOM' );
+    }
   }
 })();

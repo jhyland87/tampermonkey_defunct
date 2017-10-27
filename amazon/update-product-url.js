@@ -13,18 +13,7 @@
 // @updateURL     https://raw.githubusercontent.com/jhyland87/tampermonkey/master/amazon/update-product-url.js
 // ==/UserScript==
 
-(function() {
-  'use strict';
-
-  if ( ! $ || typeof $ !== 'function' ){
-    console.error( 'Unable to fully load the Tampermonkey script kill-livestamp.js - jQuery is required, but not found' );
-  }
-  else {
-  document.addEventListener("DOMContentLoaded", modifyUrl );
-  }
-})();
-
-function modifyUrl( event ){
+document.addEventListener("DOMContentLoaded", function modifyUrl( event ){
   var origPath = window.location.pathname;
 
   Array.from( document.getElementsByTagName('link') ).forEach(function( link, idx ){
@@ -52,13 +41,4 @@ function modifyUrl( event ){
 
     return false;
   })
-}
-
-
-try {
-   throw 'myException'; // generates an exception
-}
-catch (e) {
-   // statements to handle any exceptions
-   logMyErrors(e); // pass exception object to error handler
-}
+});

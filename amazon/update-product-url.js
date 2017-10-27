@@ -4,8 +4,8 @@
 // @version       0.1
 // @description   Changes the URL by taking out any useless parameters or hash values and setting it to the proper URL
 // @author        Justin Hyland (j@linux.com)
-// @include       /^https?:\/\/www\.amazon\.com\/?.*/
-// @match         /^https?:\/\/www\.amazon\.com\/?.*/
+// @include       /^https?:\/\/www\.amazon\.com\/.*
+// @match         /^https?:\/\/www\.amazon\.com\/.*
 // @homepage      https://github.com/jhyland87/tampermonkey
 // @grant         none
 // @run-at        document-body
@@ -20,11 +20,11 @@
     console.error( 'Unable to fully load the Tampermonkey script kill-livestamp.js - jQuery is required, but not found' );
   }
   else {
-    $( window ).load( modifyUrl );
+  document.addEventListener("DOMContentLoaded", modifyUrl );
   }
 })();
 
-function modifyUrl(){
+function modifyUrl( event ){
   var origPath = window.location.pathname;
 
   Array.from( document.getElementsByTagName('link') ).forEach(function( link, idx ){
@@ -39,9 +39,9 @@ function modifyUrl(){
     console.debug( 'Changing URL from %s to %s', origPath, newPath );
 
     try {
-      history.pushState( 
-        history.state, 
-        document.title, 
+      history.pushState(
+        history.state,
+        document.title,
         newPath );
 
       console.info('Successfully changed pathname from %s to %s', origPath, newPath );
@@ -49,7 +49,7 @@ function modifyUrl(){
     catch (e){
       console.error('Error changing pathname from %s to %s - %s', origPath, newPath, e);
     }
-      
+
     return false;
   })
 }

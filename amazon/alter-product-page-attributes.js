@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name          alter-product-page-attributes.js
+// @name          Amazon product page title and URL path simplifier
 // @namespace     https://raw.githubusercontent.com/jhyland87/tampermonkey/master/amazon/alter-product-page-attributes.js
 // @version       0.1
 // @description   Changes the URL by taking out any useless parameters or hash values and setting it to the proper URL; Removes the "Amazon.com: " prefix from the HTML title.

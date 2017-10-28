@@ -15,7 +15,7 @@
 
 document.addEventListener("DOMContentLoaded", function modifyUrl( event ){
   var docTitle = document.querySelector("title"),
-      titlePtrn = new RegExp('^Amazon.com: '),
+      titlePtrn = new RegExp('^Amazon.com\\s*:\\s*'),
       origPath = window.location.pathname;
 
   if ( titlePtrn.test( docTitle.innerText ) )

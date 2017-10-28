@@ -18,8 +18,8 @@ document.addEventListener("DOMContentLoaded", function modifyUrl( event ){
       titlePtrn = new RegExp('^Amazon.com: '),
       origPath = window.location.pathname;
 
-  if ( titlePtrn.test( docTitle ) )
-    docTitle = docTitle.replace( titlePtrn, '' );
+  if ( titlePtrn.test( docTitle.innerText ) )
+    docTitle.innerText = docTitle.innerText.replace( titlePtrn, '' );
 
   Array.from( document.getElementsByTagName('link') ).forEach(function( link, idx ){
     if ( link.getAttribute('rel') !== 'canonical' )

@@ -215,10 +215,5 @@ function showShortUrl( event ){
   }
 }
 
-if ( supportsES6 === false )
-  throw new Error( 'What?! Your browser doesn\'t support ES6? To hell with you.' );
-
-_log( 'debug','Woot, you support ES6. God bless your heart.');
-
 document.addEventListener( 'DOMContentLoaded', setProductUrl );
 document.addEventListener( 'keypress', showShortUrl );

@@ -188,7 +188,7 @@ function setProductUrl( event ){
  *            easier to handle.
  * @note      Its not possible to set the current document HREF due to the fact that the short URL (http://amzn.com) is
  *            not the same as the current URL (https://amazon.com).
- * @param     {KeyboardEvent}   event           
+ * @param     {KeyboardEvent}   event        
  */
 function showShortUrl( event ){
   var pageInfo = processPageInfo();

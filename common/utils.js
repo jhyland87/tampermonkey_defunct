@@ -30,7 +30,7 @@
    * @example   String.isString({})     // false
    */
   String.isString = function( value ){
-    return typeof value === 'string'
+    return typeof value === 'string';
   };
 
   /**
@@ -46,7 +46,7 @@
    * @example   Number.isNumber('12') // false
    */
   Number.isNumber = function( value ){
-    return typeof value === 'number'
+    return typeof value === 'number';
   };
 
   /**
@@ -62,17 +62,8 @@
   String.isNumber = 
   String.isFloat = 
   Number.strNumber =
-  Number.strFloat = 
-  function( value ){
-    return parseFloat( value ) == value
-  };
-
-  String.isNumber 
-  = String.isFloat 
-  = Number.strNumber 
-  = Number.strFloat 
-  = function( value ){
-    return parseFloat( value ) == value
+  Number.strFloat = function( value ){
+    return parseFloat( value ) == value;
   };
 
   /**
@@ -85,8 +76,10 @@
    * @return    
    * @example   
    */
-  String.isInt = Number.strInt = function( value ){
-    return parseInt( value ) == value
+  String.isInt = 
+  String.isInteger = 
+  Number.strInt = function( value ){
+    return parseInt( value ) == value;
   };
 
   /**
@@ -108,6 +101,9 @@
    *      // protocol: "https:", host: "github.com"}
    */
   Object.prototype.filter = function( predicate, noErr ){ 
+    if ( ! predicate )
+      throw new TypeError( 'No filter function provided' );
+
     if ( typeof predicate !== 'function' )
       throw new TypeError( 'Expected to receive a function as predicate - received typeof: '+ typeof predicate );
 
@@ -140,34 +136,31 @@
    * @example   Number.isNumber('12') // false
    */
   Array.prototype.remove = function( predicate ) {
-    var removed = []
+    var removed = [];
 
     if ( typeof predicate === 'function' ){
-      for( var idx=0; idx<this.length; idx++ ){
-        if ( predicate( this[idx], idx ) === true ){
-          removed.push(this[idx])
-          this.splice( idx, 1 )
-        }
+      for( var idx = 0; idx < this.length; idx++ ){
+        if ( predicate( this[idx], idx ) === true )
+          removed.push(this.splice( idx, 1 )[0]);
       }
-      return removed
+      return removed;
     }
     
     if ( String.isString( predicate ) || Number.isNumber( predicate ) ) 
-      predicate = [predicate]
+      predicate = [ predicate ];
 
-    if ( Array.isArray(predicate) ){
-      predicate.forEach(pred => {
-        if ( this.indexOf(pred) !== -1 ){
-          for( var idx in this ){
-            if ( this[idx] === pred ){
-              removed.push(this[idx])
-              this.splice( idx, 1 )
-            }
-          }
-        }     
-      })
+    if ( Array.isArray( predicate ) ){
+      predicate.forEach( pred => {
+        if ( this.indexOf( pred ) === -1 ) 
+          return;
 
-      return removed
+        for( var idx in this ){
+          if ( this[idx] === pred )
+            removed.push( this.splice( idx, 1 )[0] );
+        }
+      });
+
+      return removed;
     }  
   };
 

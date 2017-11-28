@@ -25,14 +25,18 @@
     var $time = $( 'time' );
 
     if ( $time.length ) {
-      console.debug( 'Found %s <time> elements in DOM', $time.length );
+      console.debug( 'Found %s <time/> %s in DOM', 
+        $time.length, 
+        ( $time.length === 1 ? 'element' : 'elements' ) );
 
       $time.each(function( idx, elm ){
+        var timestamp = new Date( $( elm ).attr( 'datetime' ) ).toGMTString();
+
         $( elm )
-          .text( new Date( $( elm ).attr( 'datetime' ) ).toGMTString() )
-          .replaceWith(function() {
-            return '<span>' + this.innerHTML + '</span>';
-          });
+          .text( timestamp )
+          .replaceWith('<span>' + this.innerHTML + '</span>')
+          .parents( 'dd.date' )
+          .prop( 'title', timestamp );
       });
     }
     else {
@@ -40,3 +44,6 @@
     }
   }
 })();
+
+//$('time').eq(0).parent('span').parent('dd').prop('title','aaaa')
+//$('time').eq(0).parents('dd.date').prop('title')

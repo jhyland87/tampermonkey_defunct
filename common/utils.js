@@ -33,6 +33,7 @@
     console.warn( 'The String object already has an "isString" method - Skipping implimentation of String.isString' );
   }
   else {
+    // String.isString = val => typeof val === 'string'; // Fails due to Lexical this
     String.isString = function( value ){
       return typeof value === 'string';
     };
@@ -57,6 +58,7 @@
     console.warn( 'The String prototype already has an "isInteger" method - Skipping implimentation of String.prototype.isInteger' );
   }
   else {
+    // String.prototype.isInteger = () => Number(this) == this && Number(this) % 1 === 0; // Fails due to Lexical this
     String.prototype.isInteger = function( ){
       return Number(this) == this && Number(this) % 1 === 0;
     };
@@ -79,6 +81,7 @@
     console.warn( 'The String prototype already has an "isFloat" method - Skipping implimentation of String.prototype.isFloat' );
   }
   else {
+    // String.prototype.isFloat = () => Number(this) == this && Number(this) % 1 !== 0;  // Fails due to Lexical this
     String.prototype.isFloat = function( ){
       return Number(this) == this && Number(this) % 1 !== 0;
     };
@@ -101,6 +104,7 @@
     console.warn( 'The String prototype already has an "isNumber" method - Skipping implimentation of String.prototype.isNumber' );
   }
   else {
+    // String.prototype.isNumber = () => Number(this) == this; // Fails due to Lexical this
     String.prototype.isNumber = function( ){
       return Number(this) == this;
     };
@@ -122,9 +126,43 @@
     console.warn( 'The Number object already has an "isNumber" method - Skipping implimentation of Number.isNumber' );
   }
   else {
+    Number.isNumber = val => typeof val === 'number';
+    /*
     Number.isNumber = function( value ){
       return typeof value === 'number';
     };
+    */
+  }
+
+  /**
+   * 
+   * @name      Number.strNumber
+   * @summary   Check if a value is a numerical value casted as a string
+   * @desc      
+   * @memberof  Number
+   * @return    {boolean}     Returns true if the value is a numeric value (as a string or as a number)
+   * @example   Number.strNumber('1')   // true
+   * @example   Number.strNumber(1)     // true
+   * @example   Number.strNumber(1.2')  // true
+   * @example   Number.strNumber('1.2)  // true
+   * @example   Number.strNumber('0')   // true
+   * @example   Number.strNumber(0.1)   // true
+   * @example   Number.strNumber('')    // false
+   * @example   Number.strNumber('0s')  // false
+   * @example   Number.strNumber([])    // false
+   * @example   Number.strNumber({})    // false
+   * @example   Number.strNumber(null)  // false
+   */
+  if ( Number.hasOwnProperty('strNumber') ) {
+    console.warn( 'The Number object already has a "strNumber" method - Skipping implimentation of Number.strNumber' );
+  }
+  else {
+    Number.strNumber = val => parseFloat( val ) == val;
+    /*
+    Number.strNumber = function( value ){
+      return parseFloat( value ) == value;
+    };
+    */
   }
 
   /**
@@ -140,9 +178,12 @@
   String.isNumber =
   String.isFloat =
   Number.strNumber =
+  Number.strFloat = val => parseFloat( val ) == val;
+  /*
   Number.strFloat = function( value ){
     return parseFloat( value ) == value;
   };
+  */
 
   /**
    * 
@@ -156,9 +197,12 @@
    */
   String.isInt =
   String.isInteger =
+  Number.strInt = val => parseInt( val ) == val;
+  /*
   Number.strInt = function( value ){
     return parseInt( value ) == value;
   };
+  */
 
   /**
    * A filter function for plain JS objects, somewhat similar to the Array.prototype.filter() function for arrays.

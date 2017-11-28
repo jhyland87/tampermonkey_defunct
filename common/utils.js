@@ -29,9 +29,14 @@
    * @example   String.isString([])     // false
    * @example   String.isString({})     // false
    */
-  String.isString = function( value ){
-    return typeof value === 'string';
-  };
+  if ( String.hasOwnProperty('isString') ){
+    console.warn( 'The String object already has an "isString" method - Skipping implimentation of String.isString' );
+  }
+  else {
+    String.isString = function( value ){
+      return typeof value === 'string';
+    };
+  }
 
   /**
    * Check to see if the value is castable to an integer (EG: "123")
@@ -48,9 +53,14 @@
    * @example   ".2".isInteger()    // false
    * @example   "test".isInteger()  // false
    */
-  String.prototype.isInteger = function( ){
-    return Number(this) == this && Number(this) % 1 === 0;
-  };
+  if ( String.prototype.hasOwnProperty('isInteger') ) {
+    console.warn( 'The String prototype already has an "isInteger" method - Skipping implimentation of String.prototype.isInteger' );
+  }
+  else {
+    String.prototype.isInteger = function( ){
+      return Number(this) == this && Number(this) % 1 === 0;
+    };
+  }
 
   /**
    * Check to see if the value is castable to a float (EG: "1.2")
@@ -65,9 +75,14 @@
    * @example   "0.0".isFloat()   // false
    * @example   "test".isFloat()  // false
    */
-  String.prototype.isFloat = function( ){
-    return Number(this) == this && Number(this) % 1 !== 0;
-  };
+  if ( String.prototype.hasOwnProperty('isFloat') ) {
+    console.warn( 'The String prototype already has an "isFloat" method - Skipping implimentation of String.prototype.isFloat' );
+  }
+  else {
+    String.prototype.isFloat = function( ){
+      return Number(this) == this && Number(this) % 1 !== 0;
+    };
+  }
 
   /**
    * Check to see if the value is castable to a float (EG: "1.2")
@@ -82,9 +97,14 @@
    * @example   "0".isNumber()    // true
    * @example   "test".isFloat()  // false
    */
-  String.prototype.isNumber = function( ){
-    return Number(this) == this;
-  };
+  if ( String.prototype.hasOwnProperty('isNumber') ) {
+    console.warn( 'The String prototype already has an "isNumber" method - Skipping implimentation of String.prototype.isNumber' );
+  }
+  else {
+    String.prototype.isNumber = function( ){
+      return Number(this) == this;
+    };
+  }
 
   /**
    * Static function used to determine if an external value is a number or not.
@@ -98,9 +118,14 @@
    * @example   Number.isNumber(1.2)  // true
    * @example   Number.isNumber('12') // false
    */
-  Number.isNumber = function( value ){
-    return typeof value === 'number';
-  };
+  if ( Number.hasOwnProperty('isNumber') ) {
+    console.warn( 'The Number object already has an "isNumber" method - Skipping implimentation of Number.isNumber' );
+  }
+  else {
+    Number.isNumber = function( value ){
+      return typeof value === 'number';
+    };
+  }
 
   /**
    * 
@@ -153,28 +178,33 @@
    *  window.location.filter(( value, key ) => ['host', 'protocol', 'port', 'search'].indexOf(key) !== -1 && value )
    *      // protocol: "https:", host: "github.com"}
    */
-  Object.prototype.filter = function( predicate, noErr = false ){
-    if ( ! predicate )
-      throw new TypeError( 'No filter function provided' );
+  if ( Object.prototype.hasOwnProperty('filter') ) {
+    console.warn( 'The Object prototype already has a "filter" method - Skipping implimentation of Object.prototype.filter' );
+  }
+  else {
+    Object.prototype.filter = function( predicate, noErr = false ){
+      if ( ! predicate )
+        throw new TypeError( 'No filter function provided' );
 
-    if ( typeof predicate !== 'function' )
-      throw new TypeError( 'Expected to receive a function as predicate - received typeof: '+ typeof predicate );
+      if ( typeof predicate !== 'function' )
+        throw new TypeError( 'Expected to receive a function as predicate - received typeof: '+ typeof predicate );
 
-    var results = {};
+      var results = {};
 
-    Object.keys( this ).forEach( key => {
-      try {
-        if ( predicate( this[ key ], key ) )
-          results[ key ] = this[ key ];
-      }
-      catch( err ){
-        if ( noErr !== true )
-          throw err;
-      }
-    });
+      Object.keys( this ).forEach( key => {
+        try {
+          if ( predicate( this[ key ], key ) )
+            results[ key ] = this[ key ];
+        }
+        catch( err ){
+          if ( noErr !== true )
+            throw err;
+        }
+      });
 
-    return results;
-  };
+      return results;
+    };
+  }
 
   /**
    * 
@@ -188,34 +218,39 @@
    * @example   Number.isNumber(1.2)  // true
    * @example   Number.isNumber('12') // false
    */
-  Array.prototype.remove = function( predicate ) {
-    var removed = [];
+  if ( Array.prototype.hasOwnProperty('remove') ) {
+    console.warn( 'The Array prototype already has a "remove" method - Skipping implimentation of Array.prototype.remove' );
+  }
+  else {
+    Array.prototype.remove = function( predicate ) {
+      var removed = [];
 
-    if ( typeof predicate === 'function' ){
-      for( var idx = 0; idx < this.length; idx++ ){
-        if ( predicate( this[idx], idx ) === true )
-          removed.push(this.splice( idx, 1 )[0]);
-      }
-      return removed;
-    }
-
-    if ( String.isString( predicate ) || Number.isNumber( predicate ) )
-      predicate = [ predicate ];
-
-    if ( Array.isArray( predicate ) ){
-      predicate.forEach( pred => {
-        if ( this.indexOf( pred ) === -1 )
-          return;
-
-        for( var idx in this ){
-          if ( this[idx] === pred )
-            removed.push( this.splice( idx, 1 )[0] );
+      if ( typeof predicate === 'function' ){
+        for( var idx = 0; idx < this.length; idx++ ){
+          if ( predicate( this[idx], idx ) === true )
+            removed.push(this.splice( idx, 1 )[0]);
         }
-      });
+        return removed;
+      }
 
-      return removed;
-    }
-  };
+      if ( String.isString( predicate ) || Number.isNumber( predicate ) )
+        predicate = [ predicate ];
+
+      if ( Array.isArray( predicate ) ){
+        predicate.forEach( pred => {
+          if ( this.indexOf( pred ) === -1 )
+            return;
+
+          for( var idx in this ){
+            if ( this[idx] === pred )
+              removed.push( this.splice( idx, 1 )[0] );
+          }
+        });
+
+        return removed;
+      }
+    };
+  }
 
   /**
    * 
@@ -231,15 +266,20 @@
    * @example   "123".isDate()            // false
    * @example   "Hello World".isDate()    // false
    */
-  String.prototype.isDate = function( ) {
-    try {
-      var d = Date.parse( this.trim() );
-      return !isNaN(d);
-    }
-    catch( err ){
-      return false;
-    }
-  };
+  if ( String.prototype.hasOwnProperty('isDate') ) {
+    console.warn( 'The String prototype already has an "isDate" method - Skipping implimentation of String.prototype.isDate' );
+  }
+  else {
+    String.prototype.isDate = function( ) {
+      try {
+        var d = Date.parse( this.trim() );
+        return !isNaN(d);
+      }
+      catch( err ){
+        return false;
+      }
+    };
+  }
 
   /**
    * Get the epoch value for the Date instances timestamp
@@ -252,9 +292,14 @@
    * @example   new Date(98, 1).getEpoch()  // 886316400
    * @example   new Date(Date.parse('Wed, 09 Aug 1995')).getEpoch() // 807951600
    */
-  Date.prototype.getEpoch = function( ) {
-    return Math.round( this.getTime() / 1000 );
-  };
+  if ( Date.prototype.hasOwnProperty('getEpoch') ) {
+    console.warn( 'The Date prototype already has a "getEpoch" method - Skipping implimentation of Date.prototype.getEpoch' );
+  }
+  else {
+    Date.prototype.getEpoch = function( ) {
+      return Math.round( this.getTime() / 1000 );
+    };
+  }
 
   /**
    * 

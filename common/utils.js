@@ -33,12 +33,57 @@
     return typeof value === 'string';
   };
 
+  /**
+   * Check to see if the value is castable to an integer (EG: "123")
+   * @name      String#isInteger
+   * @summary   Checks if the strings value is an integer in string format (EG: "1")
+   * @desc      Checks if the strings value is an integer in string format (EG: "1")
+   * @memberof  String.prototype
+   * @return    {boolean}           Returns true if value is an integer in string format
+   * @example   "1".isInteger()     // true
+   * @example   "1.".isInteger()    // true
+   * @example   "1.0".isInteger()   // true
+   * @example   "0.0".isInteger()   // true
+   * @example   "1.2".isInteger()   // false
+   * @example   ".2".isInteger()    // false
+   * @example   "test".isInteger()  // false
+   */
   String.prototype.isInteger = function( ){
-    return this == parseInt(this);
+    return Number(this) == this && Number(this) % 1 === 0;
   };
 
+  /**
+   * Check to see if the value is castable to a float (EG: "1.2")
+   * @name      String#isFloat
+   * @summary   Checks if the strings value is a float in string format (EG: "1.2")
+   * @desc      Checks if the strings value is a float in string format (EG: "1.2")
+   * @memberof  String.prototype
+   * @return    {boolean}           Returns true if value is a float in string format
+   * @example   "1.2".isFloat()   // true
+   * @example   ".2".isFloat()    // true
+   * @example   "1".isFloat()     // false
+   * @example   "0.0".isFloat()   // false
+   * @example   "test".isFloat()  // false
+   */
   String.prototype.isFloat = function( ){
-    return this == parseFloat(this);
+    return Number(this) == this && Number(this) % 1 !== 0;
+  };
+
+  /**
+   * Check to see if the value is castable to a float (EG: "1.2")
+   * @name      String#isNumber
+   * @summary   Checks if the strings value is a number in string format (EG: "1.2", "1", "00.1")
+   * @desc      Checks if the strings value is a number in string format (EG: "1.2", "1", "00.1")
+   * @memberof  String.prototype
+   * @return    {boolean}           Returns true if value is a number in string format
+   * @example   "1".isNumber()    // true
+   * @example   "1.2".isNumber()  // true
+   * @example   ".2".isNumber()   // true
+   * @example   "0".isNumber()    // true
+   * @example   "test".isFloat()  // false
+   */
+  String.prototype.isNumber = function( ){
+    return Number(this) == this
   };
 
   /**
@@ -174,6 +219,45 @@
 
   /**
    * 
+   * @name      String#isDate
+   * @summary   
+   * @desc      
+   * @memberof  String.prototype
+   * @return    {array}           Returns an array containing only unique values of the original array
+   * @example   String(new Date().toLocaleDateString()).isDate() // true
+   * @example   String(new Date().toISOString()).isDate()  // true
+   * @example   String(new Date().toDateString()).isDate() // true
+   * @example   " 11/27/2017  ".isDate()  // true
+   * @example   "123".isDate()            // false
+   * @example   "Hello World".isDate()    // false
+   */
+  String.prototype.isDate = function( ) {
+    try {
+      var d = Date.parse( this.trim() );
+      return !isNaN(d)
+    }
+    catch( err ){
+      return false;
+    }
+  };
+
+  /**
+   * Get the epoch value for the Date instances timestamp
+   * @name      Date#getEpoch
+   * @summary   
+   * @desc      
+   * @memberof  Date.prototype
+   * @return    {number}           A 10 digit long number representing the epoch date
+   * @example   new Date().getEpoch()       // 1511848679
+   * @example   new Date(98, 1).getEpoch()  // 886316400
+   * @example   new Date(Date.parse('Wed, 09 Aug 1995')).getEpoch() // 807951600
+   */
+  Date.prototype.getEpoch = function( ) {
+    return Math.round( this.getTime() / 1000 );
+  };
+
+  /**
+   * 
    * @name      Array#uniques
    * @summary   
    * @desc      
@@ -184,13 +268,4 @@
   Array.prototype.uniques = function( ) {
 
   };
-
-
-  /**
-   * To Add
-   *  - String.prototype.isInteger()
-   *  - String.prototype.isFloat()
-   *  - String.prototype.isNumber()
-   */
-
 })();

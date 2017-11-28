@@ -83,7 +83,7 @@
    * @example   "test".isFloat()  // false
    */
   String.prototype.isNumber = function( ){
-    return Number(this) == this
+    return Number(this) == this;
   };
 
   /**
@@ -112,8 +112,8 @@
    * @return    
    * @example   
    */
-  String.isNumber = 
-  String.isFloat = 
+  String.isNumber =
+  String.isFloat =
   Number.strNumber =
   Number.strFloat = function( value ){
     return parseFloat( value ) == value;
@@ -129,8 +129,8 @@
    * @return    
    * @example   
    */
-  String.isInt = 
-  String.isInteger = 
+  String.isInt =
+  String.isInteger =
   Number.strInt = function( value ){
     return parseInt( value ) == value;
   };
@@ -139,21 +139,21 @@
    * A filter function for plain JS objects, somewhat similar to the Array.prototype.filter() function for arrays.
    * @name      Object#filter
    * @summary   Filter through the contents of an object
-   * @desc      Adds the ability to filter through the associated object by iterating through each child element while 
+   * @desc      Adds the ability to filter through the associated object by iterating through each child element while
    *            executing the predicate function, handing both the element value and the element key.
    * @memberof  Object.prototype
-   * @param     {function}  predicate       Function to use for filtering. 
-   * @param     {boolean}   [noErr=false]   If this is set to true, then any exceptions thrown by the predicate 
+   * @param     {function}  predicate       Function to use for filtering.
+   * @param     {boolean}   [noErr=false]   If this is set to true, then any exceptions thrown by the predicate
    *                                        executions will be caught (defaults to false, halting on exceptions)
    * @return    {object}                    Returns an object containing only the filtered results
    * @example  Filtering an object by the value only
-   *  { foo : 'bar', baz: '', qux: 'quux', corge: null }.filter( value => !!value ) 
+   *  { foo : 'bar', baz: '', qux: 'quux', corge: null }.filter( value => !!value )
    *      // {foo: "bar", qux: "quux"}
    * @example  Filtering an object by the key and value
    *  window.location.filter(( value, key ) => ['host', 'protocol', 'port', 'search'].indexOf(key) !== -1 && value )
    *      // protocol: "https:", host: "github.com"}
    */
-  Object.prototype.filter = function( predicate, noErr ){ 
+  Object.prototype.filter = function( predicate, noErr ){
     if ( ! predicate )
       throw new TypeError( 'No filter function provided' );
 
@@ -172,7 +172,7 @@
           throw err;
       }
     });
-    
+
     return results;
   };
 
@@ -198,13 +198,13 @@
       }
       return removed;
     }
-    
-    if ( String.isString( predicate ) || Number.isNumber( predicate ) ) 
+
+    if ( String.isString( predicate ) || Number.isNumber( predicate ) )
       predicate = [ predicate ];
 
     if ( Array.isArray( predicate ) ){
       predicate.forEach( pred => {
-        if ( this.indexOf( pred ) === -1 ) 
+        if ( this.indexOf( pred ) === -1 )
           return;
 
         for( var idx in this ){
@@ -214,7 +214,7 @@
       });
 
       return removed;
-    }  
+    }
   };
 
   /**
@@ -234,7 +234,7 @@
   String.prototype.isDate = function( ) {
     try {
       var d = Date.parse( this.trim() );
-      return !isNaN(d)
+      return !isNaN(d);
     }
     catch( err ){
       return false;

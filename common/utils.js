@@ -33,6 +33,14 @@
     return typeof value === 'string';
   };
 
+  String.prototype.isInteger = function( ){
+    return this == parseInt(this);
+  };
+
+  String.prototype.isFloat = function( ){
+    return this == parseFloat(this);
+  };
+
   /**
    * Static function used to determine if an external value is a number or not.
    * @name      Number.isNumber

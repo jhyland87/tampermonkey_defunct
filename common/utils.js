@@ -153,7 +153,7 @@
    *  window.location.filter(( value, key ) => ['host', 'protocol', 'port', 'search'].indexOf(key) !== -1 && value )
    *      // protocol: "https:", host: "github.com"}
    */
-  Object.prototype.filter = function( predicate, noErr ){
+  Object.prototype.filter = function( predicate, noErr = false ){
     if ( ! predicate )
       throw new TypeError( 'No filter function provided' );
 

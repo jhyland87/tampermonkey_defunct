@@ -32,8 +32,9 @@
  * @property  {string|array}  filter.events         -   What events to execute the filter function on. This function 
  *                                                      works best when limited to the events: keydown, keypress, 
  *                                                      keyup, blur, click, dblclick, focus, focusin and focusout
- * @property  {boolean}       filter.casesensitive  -   Is the search case sensitive?
- * @property  {number}        watchListInterval     -   Millisecond interval to wait when checking for list visibility
+ * @property  {object}        dropdownList          -   Settings that pertain to the dropdown element of list names
+ * @property  {number}        dropdownList.interval -   Millisecond interval to wait when checking for list visibility
+ * @property  {string}        dropdownList.selector -   CSS Selector for element in dropdown to search for
  */
 var _CFG = {
   input: {
@@ -64,7 +65,11 @@ var _CFG = {
     ]
   },
   // Interval to wait when checking if the Favorites List menu is expanded or not
-  watchListInterval: 100
+  dropdownList: {
+    interval  : 100,
+    selector  :  '#atwl-dd-ul'
+    //selector:  '[id^=a-popover-content-]'
+  }
 };
 
 (function( $ ) {
@@ -215,9 +220,9 @@ var _CFG = {
 
   var lastState         = false,  // Tmp val used to compare the current state to the previous state
       searchTimeout     = null,   // Val to assign the setTimeout() instances to
-      watchListInterval = setInterval(function () {
+      watchListInterval = setInterval( function () {
     // If the dropdown list is NOT visible, then just continue to the next iteration
-    if ( ! $( '[id^=a-popover-content-]' ).is( ':visible' ) ) {
+    if ( ! $( _CFG.dropdownList.selector ).is( ':visible' ) ) {
       lastState = false;
       return;
     }
@@ -296,5 +301,5 @@ var _CFG = {
     }
 
     lastState = true;
-  }, _CFG.watchListInterval );
-})(jQuery);
+  }, _CFG.dropdownList.interval );
+})( jQuery );

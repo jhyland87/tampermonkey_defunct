@@ -29,8 +29,8 @@
  * @property  {string|array}  filter.delimiters     -   Search delimiters, may be more than 1 char (EG: || or &&)
  * @property  {boolean}       filter.trim           -   Determines if the search strings should be trimmed
  * @property  {string|array}  filter.regexFlags     -   Any custom regex pattern matching flags
- * @property  {string|array}  filter.events         -   What events to execute the filter function on. This function 
- *                                                      works best when limited to the events: keydown, keypress, 
+ * @property  {string|array}  filter.events         -   What events to execute the filter function on. This function
+ *                                                      works best when limited to the events: keydown, keypress,
  *                                                      keyup, blur, click, dblclick, focus, focusin and focusout
  * @property  {object}        dropdownList          -   Settings that pertain to the dropdown element of list names
  * @property  {number}        dropdownList.interval -   Millisecond interval to wait when checking for list visibility
@@ -50,7 +50,7 @@ var _CFG = {
     trim          : true,
     regexFlags    : [],
     casesensitive : false,
-    events        : [ 
+    events        : [
       // This functionality works best when limited to the following events:
       //    keydown   - Fired when a key is pressed down
       //    keypress  - Fired when a key that produces a character value is pressed down
@@ -61,7 +61,7 @@ var _CFG = {
       //    focus     - Fired when an element has received focus
       //    focusin   - Fired when an element is about to receive focus
       //    focusout  - Fired when an element is about to lose focus
-      'keyup' 
+      'keyup'
     ]
   },
   // Interval to wait when checking if the Favorites List menu is expanded or not
@@ -75,6 +75,11 @@ var _CFG = {
 (function( $ ) {
   'use strict';
 
+  if ( ! $ ) {
+    console.warn( 'jQuery not defined - aborting Amazon list filter' );
+    return;
+  }
+
   /**
    * Unique the value of an array
    * @param     {*}         elem  Array element value
@@ -83,12 +88,12 @@ var _CFG = {
    * @returns   {boolean}   Returns true if the element is in the array
    * @example   Array( 'a','b','c','b','c' ).filter( uniqueArray ) // ["a", "b", "c"]
    */
-  function uniqueArray( elem, idx, arr ) { 
+  function uniqueArray( elem, idx, arr ) {
     return arr.indexOf( elem ) === idx;
   }
 
   /**
-   * Check if a provided value actually contains some legitimate data, Checks for things like strings w/ only spaces 
+   * Check if a provided value actually contains some legitimate data, Checks for things like strings w/ only spaces
    * and empty Symbol objects.
    * @desc      Function to determine if a provided value is empty. This makes checking some unorthodox value types
    *            much easier, such as Symbols.
@@ -115,40 +120,47 @@ var _CFG = {
    */
   function isEmpty( val ){
     // Rule out null and undefined values
-    if ( val === null || val === undefined )
+    if ( val === null || val === undefined ) {
       return true;
+  }
 
     // Handle functions manually, since the .length will return 0
-    if ( typeof val === 'function' )
+    if ( typeof val === 'function' ) {
       return false;
+  }
 
     // Handle numbers differently (since the value 0 shouldnt be considered empty)
-    if ( typeof val === 'number' )
+    if ( typeof val === 'number' ) {
       return ! val.toString().length;
+  }
 
     // If the value is an object, then count the values
-    if ( typeof val === 'object' && ! Array.isArray( val ) )
+    if ( typeof val === 'object' && ! Array.isArray( val ) ) {
       return ! Object.values( val ).length;
-  
+  }
+
     // If it's a string, then trim it before checking
-    if ( typeof val === 'string' )
+    if ( typeof val === 'string' ) {
       return ! val.trim().length;
+  }
 
     // If its a Symbol, then check that the value within Symbol() has some content (other than just spaces)
-    if ( typeof val === 'symbol' )
+    if ( typeof val === 'symbol' ) {
       return val.toString().match( RegExp( '^Symbol\\((.*[^ ].*)\\)$' ) ) === null;
+  }
       //return val.toString().match(/^Symbol\((.*[^ ].*)\)$/) === null;
 
     // Anything else should work fine with the length property
-    if ( val.hasOwnProperty( 'length' ) )
+    if ( val.hasOwnProperty( 'length' ) ) {
       return ! val.length;
+  }
 
     // Anything else, just convert it to the opposing boolean
     return ! val;
   }
 
   /**
-   * 
+   *
    * @desc    Function to iterate through the list items in the item list dropdown in the Amazon UI. This checks the
    *          list name against the value provided, setting the CSS display attribute.
    * @param     {string=}   txt   String to filter the list with. If null or undefined, all lists will be made visible.
@@ -178,7 +190,7 @@ var _CFG = {
       }
     }
 
-    // If case sensitivity isn't set to true, then add the 'i' 
+    // If case sensitivity isn't set to true, then add the 'i'
     if ( _CFG.filter.casesensitive !== true ){
       filterFlags.push( 'i' );
     }
@@ -231,8 +243,8 @@ var _CFG = {
     if ( lastState === false ){
     // if the last state was false, then that means this is the first check in which the list is visible
       // Create a jQuery element for the filter input
-      var filterInput = $( '<input/>', { 
-        id          : _CFG.input.id, 
+      var filterInput = $( '<input/>', {
+        id          : _CFG.input.id,
         placeholder : 'Search List'
       });
 
@@ -254,7 +266,7 @@ var _CFG = {
 
       /**
        * Filter event
-       * @desc  
+       * @desc
        * @param   {e=}  Event   Event being fired (not used, as of yet)
        */
       var fnFilterEvent = function( e ) {
@@ -264,7 +276,7 @@ var _CFG = {
         }
 
         // Start the timeout to execute the filterList function after the set delay
-        searchTimeout = setTimeout( function(){ 
+        searchTimeout = setTimeout( function() {
           var searchTxt = $( '#favlist-filter-input' ).val().trim();
           filterList( searchTxt );
         }, _CFG.filter.delay );
@@ -295,11 +307,11 @@ var _CFG = {
       $( '[id^=a-popover-content-]' ).prepend( filterInput );
 
       // After the filter input is created, focus on it (after giving the dom a sec to load it)
-      setTimeout( function(){ 
+      setTimeout( function(){
         $( '#favlist-filter-input' ).focus();
       }, 100 );
     }
 
     lastState = true;
   }, _CFG.dropdownList.interval );
-})( jQuery );
+})( typeof jQuery !=='undefined' ? jQuery : null );

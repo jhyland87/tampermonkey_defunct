@@ -85,9 +85,15 @@ var _CFG = {
  * @todo    Last N item lists that were clicked should be saved in history
  *
  */
- var x = window.AmazonUIPageJS._namespace("CommonDetailPageScripts")
-x.when("jQuery").execute(function($) {
+var x = window.AmazonUIPageJS._namespace("CommonDetailPageScripts")
+x.when("jQuery", "A", "sh-utilities", "ready", "query-param").execute(function($, b, c, d, e) {
   console.debug('[CommonDetailPageScripts] arg "%s":', 'arguments', arguments)
+  console.debug('[CommonDetailPageScripts] arg "%s" (%s):', 'jQuery', typeof $, $)
+  console.debug('[CommonDetailPageScripts] arg "%s" (%s):', 'A', typeof b, b)
+  console.debug('[CommonDetailPageScripts] arg "%s" (%s):', 'sh-utilities', typeof c, c)
+  console.debug('[CommonDetailPageScripts] arg "%s" (%s):', 'ready', typeof d, d)
+  console.debug('[CommonDetailPageScripts] arg "%s" (%s):', 'query-param', typeof e, e)
+  console.log('e():', e())
 
   console.debug(Object.keys($))
 })

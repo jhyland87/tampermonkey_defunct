@@ -15,7 +15,7 @@
 // @downloadURL   https://raw.githubusercontent.com/jhyland87/tampermonkey/master/amazon/list-filter.js
 // @updateURL     https://raw.githubusercontent.com/jhyland87/tampermonkey/master/amazon/list-filter.js
 // ==/UserScript==
-
+ 
 /**
  * Filter Config stuff
  * @desc      Object containing the config values for the search input, filter logic, etc.
@@ -64,6 +64,10 @@ var _CFG = {
       'keyup'
     ]
   },
+  prioritizeRecent: {
+    limit: 5,
+    storage: window.sessionStorage // window.sessionStorage or window.localStorage
+  },
   // Interval to wait when checking if the Favorites List menu is expanded or not
   dropdownList: {
     interval  : 100,
@@ -71,6 +75,22 @@ var _CFG = {
     //selector:  '[id^=a-popover-content-]'
   }
 };
+
+
+
+/**
+ *
+ * TODO:
+ * @todo    Search phrases in which an item list WAS clicked should be saved to history
+ * @todo    Last N item lists that were clicked should be saved in history
+ *
+ */
+ var x = window.AmazonUIPageJS._namespace("CommonDetailPageScripts")
+x.when("jQuery").execute(function($) {
+  console.debug('[CommonDetailPageScripts] arg "%s":', 'arguments', arguments)
+
+  console.debug(Object.keys($))
+})
 
 (function( $ ) {
   'use strict';
@@ -122,41 +142,98 @@ var _CFG = {
     // Rule out null and undefined values
     if ( val === null || val === undefined ) {
       return true;
-  }
+    }
 
     // Handle functions manually, since the .length will return 0
     if ( typeof val === 'function' ) {
       return false;
-  }
+    }
 
-    // Handle numbers differently (since the value 0 shouldnt be considered empty)
+      // Handle numbers differently (since the value 0 shouldnt be considered empty)
     if ( typeof val === 'number' ) {
       return ! val.toString().length;
-  }
+    }
 
     // If the value is an object, then count the values
     if ( typeof val === 'object' && ! Array.isArray( val ) ) {
       return ! Object.values( val ).length;
-  }
+    }
 
     // If it's a string, then trim it before checking
     if ( typeof val === 'string' ) {
       return ! val.trim().length;
-  }
+    }
 
     // If its a Symbol, then check that the value within Symbol() has some content (other than just spaces)
     if ( typeof val === 'symbol' ) {
       return val.toString().match( RegExp( '^Symbol\\((.*[^ ].*)\\)$' ) ) === null;
-  }
-      //return val.toString().match(/^Symbol\((.*[^ ].*)\)$/) === null;
+    }
+    //return val.toString().match(/^Symbol\((.*[^ ].*)\)$/) === null;
 
     // Anything else should work fine with the length property
     if ( val.hasOwnProperty( 'length' ) ) {
       return ! val.length;
-  }
+    }
 
     // Anything else, just convert it to the opposing boolean
     return ! val;
+  }
+
+  /**
+   * Count List Items
+   *
+   * @param   {bool,undef}  visMode   Item visibility status to count:
+   *                                      true            = visible
+   *                                      false           = hidden
+   *                                      null/undefined  = all
+   */
+  function listItems( visMode ){
+    //var checkFunc = ( idx, elem ) => ( visMode === null || visMode === undefined ? true : $( elem ).is(":visible") === !!visMode );
+
+    return $( _CFG.dropdownList.selector ).find( 'li.a-dropdown-item' ).filter( function( idx, elem ){
+      if ( visMode === null || visMode === undefined )
+        return true;
+
+      return $( elem ).is( ':visible' ) === !!visMode;
+    });
+  }
+
+  function listItemPlaceholder( text ){
+    if ( ! text ){
+      if ( $('#item-list-placeholder').length ){
+        $('#item-list-placeholder').remove()
+      }
+      return
+    }
+
+    if ( $('#item-list-placeholder').length ){
+      if ( ! text ){
+        $('#item-list-placeholder').remove()
+      }
+      else {
+        $('#item-list-placeholder').html( text )
+      }
+
+      return 
+    }
+
+    if ( ! text ){
+      return
+    }
+
+    var $placeholderLi = $('<li/>', {
+      id: 'item-list-placeholder',
+      class: 'a-dropdown-item',
+      html: text, 
+      css: { 
+        'text-align': 'center',
+        'padding': '5px 0 0 0',
+        'color': '#b1b1b1',
+        'font-style': 'italic'
+      }
+    })
+
+    $('#atwl-dd-ul').append( $placeholderLi )
   }
 
   /**
@@ -168,8 +245,10 @@ var _CFG = {
    * @example   filterList( 'foo; bar' )  // Show only lists with 'foo' or 'bar' in the title (if delimiter is ';')
    * @example   filterList( null )        // Show all lists
    */
-  function filterList( txt ){
-    var searchTxt   = txt.trim(),
+  function filterList( searchInput ){
+    listItemPlaceholder()
+
+    var searchTxt   = ( isEmpty( searchInput ) ? null : searchInput.trim() ),
         filterPtrn  = searchTxt,
         filterFlags = [];
 
@@ -214,25 +293,80 @@ var _CFG = {
       filterFlags = filterFlags.filter( uniqueArray );
     }
 
-    var filterRegex = new RegExp( filterPtrn, filterFlags.join( '' ) );
+    var filterRegex = ( filterPtrn ? new RegExp( filterPtrn, filterFlags.join( '' ) ) : false ) ;
 
     // Iterate through the dropdown items,
     $( '.a-dropdown-item' ).each( function( idx, elem ){
-      var $titleElem  = $( elem ).find( '.atwl-hz-dd-list-name' ),
-          title       = $titleElem.text().trim();
+      var $titleElem    = $( elem ).find( '.atwl-hz-dd-list-name' ),
+          itemTitleTxt  = $titleElem.text().trim();
 
-      if ( filterRegex.test( title ) ){
+      // If theres no search string(s) then clear any HTML from the item title, show the element, then skip to the 
+      // next dropdown item
+      if ( ! searchTxt || ! filterRegex ){
+        $titleElem.html( itemTitleTxt );
         $( elem ).show();
+        return true;
       }
-      else {
+
+      var titleMatch  = itemTitleTxt.match( filterRegex );
+      
+      if ( titleMatch === null ){
         $( elem ).hide();
+        return true;
       }
+
+      var newTitle = itemTitleTxt
+
+      // Unique the matches
+      // var matches = Array.from(titleMatch).filter((v,i,s) => s.indexOf(v) === i );
+      Array.from( titleMatch ).filter(function( value, index, self ) { 
+        return self.indexOf( value ) === index; 
+      }).forEach(function( str, idx ){
+        var replHtml = $('<span/>', {
+              css: {
+                'text-decoration': 'underline',
+                'color': '#4c91ff',
+                'font-weight': 'bold'
+              },
+              text: str
+            })
+        var newStr = newTitle.replace( str, replHtml[0].outerHTML )
+        $titleElem.html( newStr )
+      })
+
+      $( elem ).show();
     })
+
+    if ( listItems( true ).length === 0 ){
+      listItemPlaceholder( 'No list items found matching: <strong>' + searchInput + '</strong>' )
+    }
   }
 
-  var lastState         = false,  // Tmp val used to compare the current state to the previous state
-      searchTimeout     = null,   // Val to assign the setTimeout() instances to
-      watchListInterval = setInterval( function () {
+  
+  /**
+   * 
+   */
+  function listWatcher(){
+    /**
+     * Example of how to move a list item to the top of the list
+    jQuery('a.a-link-normal.a-dropdown-link').click(function(e) {
+      e.stopImmediatePropagation();
+      var parentLink = jQuery(this).parent().parent()
+      parentLink.parent().prepend(parentLink)
+      console.log('parent:',parentLink)
+    });
+    */
+    $('a.a-link-normal.a-dropdown-link').click(function(e) {
+      var clickedName = $(e.currentTarget).find('.atwl-hz-dd-list-name:eq(0)')
+      //e.stopImmediatePropagation();
+      console.log('a.a-link-normal.a-dropdown-link CLICKED!')
+      console.log('arguments:',arguments)
+      console.log('e:',e)
+      console.log('clickedName:',clickedName)
+      console.log('clickedName.length:',clickedName.length)
+      console.log('clickedName.text():',clickedName.text().trim())
+    });
+
     // If the dropdown list is NOT visible, then just continue to the next iteration
     if ( ! $( _CFG.dropdownList.selector ).is( ':visible' ) ) {
       lastState = false;
@@ -313,5 +447,9 @@ var _CFG = {
     }
 
     lastState = true;
-  }, _CFG.dropdownList.interval );
+  }
+
+  var lastState         = false,  // Tmp val used to compare the current state to the previous state
+      searchTimeout     = null,   // Val to assign the setTimeout() instances to
+      watchListInterval = setInterval( listWatcher, _CFG.dropdownList.interval );
 })( typeof jQuery !=='undefined' ? jQuery : null );

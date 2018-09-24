@@ -84,6 +84,7 @@ var _CFG = {
  * @todo    Search phrases in which an item list WAS clicked should be saved to history
  * @todo    Last N item lists that were clicked should be saved in history
  * @todo    Disable the list dropdown until the content has fully loaded
+ * @todo    Have a mode that will move the matched list items to the top of the list, but not delete the other lists
  */
  (function( w ) {
   'use strict';

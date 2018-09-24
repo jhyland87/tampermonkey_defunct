@@ -83,7 +83,7 @@ var _CFG = {
  * TODO:
  * @todo    Search phrases in which an item list WAS clicked should be saved to history
  * @todo    Last N item lists that were clicked should be saved in history
- *
+ * @todo    Disable the list dropdown until the content has fully loaded
  */
  (function( w ) {
   'use strict';
